@@ -39,7 +39,6 @@ tinder_api.authverif()
 
 tinder_api.get_updates("2017-11-18T10:28:13.392Z")
 
-%matplotlib auto
 #plt.ioff()
 #plt.ion()
 #inline
