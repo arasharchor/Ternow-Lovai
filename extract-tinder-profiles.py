@@ -45,26 +45,44 @@ tinder_api.get_updates("2017-11-18T10:28:13.392Z")
 
 
 def press(event):
+    global _id
+    global images
     #print('press', event.key)
     sys.stdout.flush()
     #print("you pressed {}".format(event.key))
     #print(type(event.key))
+    #while(event.key not in ['right', 'left', 'up']):
+    #    print("you pressed {}".format(event.key))
     if event.key in ['right', 'left', 'up']:
         #print('after event.key _id is {}'.format(_id))
+
         if event.key == 'right':
             # Like a user 
             tinder_api.like(_id)
             print('you liked')
+            likecount = 0
+            for _image in images:
+                io.imsave('input_dataset/liked/profile_{}_{}.jpg'.format(_id, likecount), _image)
+                likecount += 1
         elif event.key == 'left':
             # Dislike a user 
             tinder_api.dislike(_id)
             print('you disliked')
+            dislikecount = 0
+            for _image in images:
+                io.imsave('input_dataset/disliked/profile_{}_{}.jpg'.format(_id, dislikecount), _image)
+                dislikecount += 1
         else:
             # Superlike a user 
             tinder_api.superlike(_id)
             print('you superliked')
+            likecount = 0
+            for _image in images:
+                io.imsave('input_dataset/liked/profile_{}_{}.jpg'.format(_id, likecount), _image)
+                likecount += 1
         #plt.show(block=False)
         plt.close()
+
         
 # Get Tinder Recommendations of people around you 
 recommendations = tinder_api.get_recommendations()
