@@ -27,9 +27,9 @@ host = 'https://api.gotinder.com' #به خاطر این خط دیگه نیازی
 
 
 # وارد کنید  facebook email 
-fb_username = 'mitikomon86@gmail.com'
+fb_username = ''
 # وارد کنید facebook password 
-fb_password = 'TMS2018'
+fb_password = ''
 
 fb_access_token = fb_auth_token.get_fb_access_token(fb_username, fb_password)
 fb_user_id = fb_auth_token.get_fb_id(fb_access_token)
