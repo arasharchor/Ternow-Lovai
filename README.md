@@ -3,7 +3,7 @@
 
 -----Instructions to run ----
 
-    NodeJS must be installed. - https://nodejs.org/en/ (for windows)
+    NodeJS must be installed. - https://nodejs.org/en
     use cmd to go to folder TriparoundSite via "cd " -> dir gives folder content.
     enter: npm install
     enter: npm install express
@@ -12,4 +12,3 @@
     cd server
     node server.js --> should give you the port
     enter in webbrowser: http:\localhost:3000
-
