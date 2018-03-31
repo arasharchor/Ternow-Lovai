@@ -1,6 +1,10 @@
 import tinder_api
 import fb_auth_token
 
+
+# Seyed Majid Azimi
+# 24.03.2018
+
 import sys
 sys.path.insert(0, '/home/majid/Ternow/gender_emotion')
 
