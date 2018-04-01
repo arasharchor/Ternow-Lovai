@@ -6,7 +6,6 @@
 
 import json
 
-import config
 import requests
 
 headers = {
@@ -16,13 +15,14 @@ headers = {
     "User-agent": "Tinder/7.5.3 (iPhone; iOS 10.3.2; Scale/2.00)",
 }
 
+host = 'https://api.gotinder.com'
 
-def get_auth_token(fb_auth_token, fb_user_id):
+def get_auth_token(fb_auth_token, fb_user_id, host):
     if "error" in fb_auth_token:
         return {"error": "could not retrieve fb_auth_token"}
     if "error" in fb_user_id:
         return {"error": "could not retrieve fb_user_id"}
-    url = config.host + '/auth'
+    url = host + '/auth'
     req = requests.post(url,
                         headers=headers,
                         data=json.dumps(
@@ -38,8 +38,8 @@ def get_auth_token(fb_auth_token, fb_user_id):
         return {"error": "Something went wrong. Sorry, but we could not authorize you."}
 
 
-def authverif():
-    res = get_auth_token(config.fb_access_token, config.fb_user_id)
+def authverif(fb_access_token, fb_user_id, host):
+    res = get_auth_token(fb_access_token, fb_user_id, host)
     if "error" in res:
         return False
     return True
@@ -53,10 +53,10 @@ def get_recommendations():
         print("Something went wrong with getting recomendations:", e)
 
 
-def get_updates(last_activity_date=""):
+def get_updates(host, last_activity_date=""):
 
     try:
-        url = config.host + '/updates'
+        url = host + '/updates'
         r = requests.post(url,
                           headers=headers,
                           data=json.dumps({"last_activity_date": last_activity_date}))
@@ -65,12 +65,12 @@ def get_updates(last_activity_date=""):
         print("Something went wrong with getting updates:", e)
 
 
-def get_self():
+def get_self(host):
     '''
     Returns your own profile data
     '''
     try:
-        url = config.host + '/profile'
+        url = host + '/profile'
         r = requests.get(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -90,7 +90,7 @@ def change_preferences(**kwargs):
     {"photo_optimizer_enabled":false}
     '''
     try:
-        url = config.host + '/profile'
+        url = host + '/profile'
         r = requests.post(url, headers=headers, data=json.dumps(kwargs))
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -99,7 +99,7 @@ def change_preferences(**kwargs):
 
 def get_meta():
     try:
-        url = config.host + '/meta'
+        url = host + '/meta'
         r = requests.get(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -111,7 +111,7 @@ def update_location(lat, lon):
     Note: Requires a passport / Tinder Plus
     '''
     try:
-        url = config.host + '/passport/user/travel'
+        url = host + '/passport/user/travel'
         r = requests.post(url, headers=headers, data=json.dumps({"lat": lat, "lon": lon}))
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -119,7 +119,7 @@ def update_location(lat, lon):
 
 def reset_real_location():
     try:
-        url = config.host + '/passport/user/reset'
+        url = host + '/passport/user/reset'
         r = requests.post(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -131,7 +131,7 @@ def get_recs_v2():
     This works more consistently then the normal get_recommendations becuase it seeems to check new location
     '''
     try:
-        url = config.host + '/v2/recs/core?locale=en-US'
+        url = host + '/v2/recs/core?locale=en-US'
         r = requests.get(url, headers=headers)
         return r.json()
     except Exception as e:
@@ -142,7 +142,7 @@ def set_webprofileusername(username):
     Sets the username for the webprofile: https://www.gotinder.com/@YOURUSERNAME
     '''
     try:
-        url = config.host + '/profile/username'
+        url = host + '/profile/username'
         r = requests.put(url, headers=headers, 
                          data=json.dumps({"username": username}))
         return r.json()
@@ -154,7 +154,7 @@ def reset_webprofileusername(username):
     Resets the username for the webprofile
     '''
     try:
-        url = config.host + '/profile/username'
+        url = host + '/profile/username'
         r = requests.delete(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -165,7 +165,7 @@ def get_person(id):
     Gets a user's profile via their id
     '''
     try:
-        url = config.host + '/user/%s' % id
+        url = host + '/user/%s' % id
         r = requests.get(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -174,7 +174,7 @@ def get_person(id):
 
 def send_msg(match_id, msg):
     try:
-        url = config.host + '/user/matches/%s' % match_id
+        url = host + '/user/matches/%s' % match_id
         r = requests.post(url, headers=headers,
                           data=json.dumps({"message": msg}))
         return r.json()
@@ -184,7 +184,7 @@ def send_msg(match_id, msg):
 
 def superlike(person_id):
     try:
-        url = config.host + '/like/%s/super' % person_id
+        url = host + '/like/%s/super' % person_id
         r = requests.post(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -193,7 +193,7 @@ def superlike(person_id):
 
 def like(person_id):
     try:
-        url = config.host + '/like/%s' % person_id
+        url = host + '/like/%s' % person_id
         r = requests.get(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -202,7 +202,7 @@ def like(person_id):
 
 def dislike(person_id):
     try:
-        url = config.host + '/pass/%s' % person_id
+        url = host + '/pass/%s' % person_id
         r = requests.get(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -217,7 +217,7 @@ def report(person_id, cause, explanation=''):
         4 : Inappropriate Photos and no explanation
     '''
     try:
-        url = config.host + '/report/%s' % person_id
+        url = host + '/report/%s' % person_id
         r = requests.post(url, headers=headers, data={
                           "cause": cause, "text": explanation})
         return r.json()
@@ -227,7 +227,7 @@ def report(person_id, cause, explanation=''):
 
 def match_info(match_id):
     try:
-        url = config.host + '/matches/%s' % match_id
+        url = host + '/matches/%s' % match_id
         r = requests.get(url, headers=headers)
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -236,7 +236,7 @@ def match_info(match_id):
 
 # def see_friends():
 #     try:
-#         url = config.host + '/group/friends'
+#         url = host + '/group/friends'
 #         r = requests.get(url, headers=headers)
 #         return r.json()['results']
 #     except requests.exceptions.RequestException as e:
