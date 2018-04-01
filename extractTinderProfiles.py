@@ -13,14 +13,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 now = datetime.now().strftime("%Y-%m-%d")
-
+_id = ''
+images = []
+like = 0
+dislike = 0
 
 def gettoken_id(fb_username, fb_password):
 
-    _id = ''
-    images = []
-    like = 0
-    dislike = 0
+
 
     global _id
 
