@@ -4,45 +4,49 @@ import tinder_api
 
 import tinder_api
 import fb_auth_token
-import sys
 from skimage import io
 from pylab import *
-import numpy as np
 from datetime import datetime
 import features
 from matplotlib import pyplot as plt
+import warnings
+warnings.filterwarnings('ignore')
+
 now = datetime.now().strftime("%Y-%m-%d")
 
 
-host = 'https://api.gotinder.com'
-# وارد کنید  facebook email
-_id = ''
-images = []
 def gettoken_id(fb_username, fb_password):
+
+    _id = ''
+    images = []
+    like = 0
+    dislike = 0
+
     global _id
-    # وارد کنید  facebook email
-    #fb_username = '@gmail.com'
-#  وارد کنید facebook password
-    #fb_password = ''
+
+    host = 'https://api.gotinder.com'
+
 
     fb_access_token = fb_auth_token.get_fb_access_token(fb_username, fb_password)
     fb_user_id = fb_auth_token.get_fb_id(fb_access_token)
 
-#برای چک کردن اینکه یوزر اکی هست
+
     tinder_api.get_auth_token(fb_access_token, fb_user_id, host)
+    print("#################################################")
 
-    # Get Tinder Recommendations of people around you
-    recommendations = tinder_api.get_recommendations()
+    while (like < 30 or dislike < 30 ):
+        recommendations = tinder_api.get_recommendations()
+        print(recommendations)
+    
+        for index in range(len(recommendations['results'])):
+            global images
+            images = []
 
-    for index in range(len(recommendations['results'])):
-        global images
-        images = []
-
-        name = recommendations['results'][index]['name']
-        birth_date = features.calculate_age(recommendations['results'][index]['birth_date'])
-        ping_time = recommendations['results'][index]['ping_time']
-        if name == '5 GUM':
-            continue
+            name = recommendations['results'][index]['name']
+            birth_date = features.calculate_age(recommendations['results'][index]['birth_date'])
+            ping_time = recommendations['results'][index]['ping_time']
+            if name == '5 GUM':
+                continue
 
         _id = recommendations['results'][index]['_id']
 
@@ -71,9 +75,10 @@ def gettoken_id(fb_username, fb_password):
                 axes[i].imshow(image)
             else:
                 axes[int(i / 4), int(i % 4)].imshow(image)
+                
+        plt.tight_layout()
         plt.show(block=True)
         print("################################################################################################")
-
     
 def press(event):
     global _id

@@ -15,16 +15,7 @@ import sqlite3
 class Ui_Dialog(object):
 
     def gettokenid(self):
-        gettoken_id(self.u_name_label, self.pass_label)
-
-        connection = sqlite3.connect("userlogindata.db")
-
-        result = connection.execute("Select * from users where username is = ? and password is = ?",
-                                    (self.u_name_label, self.pass_label))
-        if len(result.fetchall()) > 0:
-            print("user found!")
-        else:
-            print("user not found")
+        gettoken_id(self.uname_lineEdit.text(), self.pass_lineEdit.text())
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
