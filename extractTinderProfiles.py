@@ -36,7 +36,6 @@ def gettoken_id(fb_username, fb_password):
 
     while (like < 30 or dislike < 30 ):
         recommendations = tinder_api.get_recommendations()
-        print(recommendations)
     
         for index in range(len(recommendations['results'])):
             global images
