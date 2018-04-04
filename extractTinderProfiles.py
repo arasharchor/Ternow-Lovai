@@ -10,6 +10,10 @@ from datetime import datetime
 import features
 from matplotlib import pyplot as plt
 import warnings
+import matplotlib.patheffects as path_effects
+import time
+import sys
+
 warnings.filterwarnings('ignore')
 
 now = datetime.now().strftime("%Y-%m-%d")
@@ -17,12 +21,15 @@ _id = ''
 images = []
 like = 0
 dislike = 0
-
+txt = None
+fig = None
 def gettoken_id(fb_username, fb_password):
 
-
+    fb_username = 'mitikomon86@gmail.com'
+    fb_password = 'TMS2018'
 
     global _id
+    global fig
 
     host = 'https://api.gotinder.com'
 
@@ -35,7 +42,13 @@ def gettoken_id(fb_username, fb_password):
     print("#################################################")
 
     while (like < 30 or dislike < 30 ):
-        recommendations = tinder_api.get_recommendations()
+
+        try:
+            recommendations = tinder_api.get_recommendations()
+
+        except:
+            recommendations = tinder_api.get_recommendations()
+           
     
         for index in range(len(recommendations['results'])):
             global images
@@ -51,16 +64,29 @@ def gettoken_id(fb_username, fb_password):
 
         print("name is {} and is {} years old  and bio is {}".
               format(name, birth_date, recommendations['results'][index]['bio']))
+        
+        try:
+            if recommendations['results'][index]['bio']:
+                fig = plt.figure('Biography', figsize=(6,4))
+                t = (recommendations['results'][index]['bio'])
+                text = fig.text(0.5, 0.5, t, ha='center', va='center', size=10)
+                text.set_path_effects([path_effects.Normal()])
+                plt.axis('off')
+                plt.tight_layout()
+                plt.show(block=False)
+        except:
+            plt.close()
+            pass
 
         number_of_subplots = len(recommendations['results'][index]['photos'])
         if number_of_subplots < 1:
             continue
         elif number_of_subplots == 1:
-            fig, axes = plt.subplots()
+            fig, axes = plt.subplots(figsize=(15,15))
         elif number_of_subplots <= 4:
-            fig, axes = plt.subplots(1, number_of_subplots)
+            fig, axes = plt.subplots(1, number_of_subplots,figsize=(15,15))
         elif number_of_subplots > 4:
-            fig, axes = plt.subplots(int(number_of_subplots / 4) + 1, 4)
+            fig, axes = plt.subplots(int(number_of_subplots / 4) + 1, 4, figsize=(15,15))
         fig.canvas.mpl_connect('key_press_event', press)
         subplots_adjust(hspace=0.000)
 
@@ -68,31 +94,61 @@ def gettoken_id(fb_username, fb_password):
             p = recommendations['results'][index]['photos'][i]
             image = io.imread(p['url'])
             images.append(image)
+            
             if number_of_subplots == 1:
+                axes.axis('off') 
                 axes.imshow(image)
+                axes.axis('off')
             elif number_of_subplots <= 4:
+                axes[i].axis('off')
                 axes[i].imshow(image)
+                axes[i].axis('off')
             else:
+                axes[int(i / 4), int(i % 4)].axis('off')
                 axes[int(i / 4), int(i % 4)].imshow(image)
-                
+                axes[int(i / 4), int(i % 4)].axis('off')
+
+        if number_of_subplots == 5:
+            for j in range(4):
+                axes[int(i / 4), int(j)].axis('off')
+         
+        elif number_of_subplots > 5:
+            while i%4 != 0:
+                axes[int(i / 4), int(i % 4)].axis('off')
+                i += 1
+
+
         plt.tight_layout()
+        #plt.axis('off')
         plt.show(block=True)
-        print("################################################################################################")
+
+        print("###################################")
+
+
     
 def press(event):
     global _id
     global images
     global like
     global dislike
+    global txt
+    global fig
     sys.stdout.flush()
+    print('you pressed {}'.format(event.key))
+    if event.key == 'e':
+        print('exit')
+        sys.exit()
+        raise SystemExit()
+
     if event.key in ['right', 'left', 'up']:
         if event.key == 'right':
             # Like a user
             tinder_api.like(_id)
             print('you liked')
+            text = 'LIKED'
             count = 0
             for _image in images:
-                io.imsave('data/liked/profile_{}_{}.jpg'.format(_id, count), _image)
+                io.imsave('/home/majid/Ternow-Lovai/data/liked/profile_{}_{}.jpg'.format(_id, count), _image)
                 count += 1
                 like += 1
                 #break
@@ -100,24 +156,36 @@ def press(event):
             # Dislike a user
             tinder_api.dislike(_id)
             print('you disliked')
+            text = 'DISLIKED'
             count = 0
             for _image in images:
-                io.imsave('data/disliked/profile_{}_{}.jpg'.format(_id, count), _image)
+                io.imsave('/home/majid/Ternow-Lovai/data/disliked/profile_{}_{}.jpg'.format(_id, count), _image)
                 count += 1
                 dislike += 1
                 #break
-        else:
+        elif event.key == 'top':
             # Superlike a user
             tinder_api.superlike(_id)
             print('you superliked')
+            text = 'SUPERLIKED'
             count = 0
             for _image in images:
-                io.imsave('data/liked/profile_{}_{}.jpg'.format(_id, count), _image)
+                io.imsave('/home/majid/Ternow-Lovai/data/liked/profile_{}_{}.jpg'.format(_id, count), _image)
                 count += 1
                 like += 1
                 #break
+
+        #plt.text(5, 5, text, style='italic', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})
+        if text in ['LIKED', 'SUPERLIKED']:
+            txt = plt.text(.5 , .5, text, fontsize=30, style='italic', bbox={'facecolor':'green', 'alpha':0.5, 'pad':1})
+        elif text == 'DISLIKED':
+            txt = plt.text(.5 , .5, text, fontsize=30, style='italic', bbox={'facecolor':'red', 'alpha':0.5, 'pad':1})
+
+        fig.canvas.draw()
+        time.sleep(1) 
         #plt.show(block=False)
-        plt.close()
+        plt.close('all')
+
 
 
 

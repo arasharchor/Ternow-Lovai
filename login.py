@@ -7,10 +7,15 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import *
 from extractTinderProfiles import gettoken_id
 
 import sqlite3
+
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtGui import QIcon, QPixmap
+
 
 class Ui_Dialog(object):
 
@@ -62,7 +67,14 @@ class Ui_Dialog(object):
         self.label.setObjectName("label")
 
         self.retranslateUi(Dialog)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+        # Create widget
+        #label = QLabel(self)
+        #pixmap = QPixmap('data/liked/profile_58e934e3df44aade62c4bef2_5.jpg')
+        #label.setPixmap(pixmap)
+        #self.resize(pixmap.width(),pixmap.height()) 
+        #self.show()
+        #QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -81,5 +93,6 @@ if __name__ == "__main__":
     ui = Ui_Dialog()
     ui.setupUi(Dialog)
     Dialog.show()
+    btnQuit = QPushButton("&Close window")
+    btnQuit.clicked.connect(Dialog.close)
     sys.exit(app.exec_())
-
